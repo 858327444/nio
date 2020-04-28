@@ -145,14 +145,27 @@ public class TestChannel {
      */
     @Test
     public void test3() throws IOException {
-        FileChannel inChannel = FileChannel.open(Paths.get("1.avi"), StandardOpenOption.READ);
-        FileChannel outChannel = FileChannel.open(Paths.get("4.avi"), StandardOpenOption.WRITE,StandardOpenOption.READ,StandardOpenOption.CREATE);
+        FileChannel fromChannel = FileChannel.open(Paths.get("1.avi"), StandardOpenOption.READ);
+        FileChannel toChannel = FileChannel.open(Paths.get("4.avi"), StandardOpenOption.WRITE,StandardOpenOption.READ,StandardOpenOption.CREATE);
+//        fromChannel.transferTo(0,fromChannel.size(),toChannel);
+        toChannel.transferFrom(fromChannel,0,fromChannel.size());
+        fromChannel.close();
+        toChannel.close();
 
-//        inChannel.transferTo(0,inChannel.size(),outChannel);
-        outChannel.transferFrom(inChannel,0,inChannel.size());
 
-        inChannel.close();
-        outChannel.close();
+//        RandomAccessFile fromFile = new RandomAccessFile("1.avi", "rw");
+//        FileChannel fromChannel = fromFile.getChannel();
+//        RandomAccessFile toFile = new RandomAccessFile("4.avi", "rw");
+//        FileChannel toChannel = toFile.getChannel();
+//        // 定义传输位置
+//        long position = 0L;
+//        // 最多传输的字节数
+//        long count = fromChannel.size();
+//        // 将数据从源通道传输到另一个通道
+//        toChannel.transferFrom(fromChannel,position,count);
+////        fromChannel.transferTo(position,count,toChannel);
+//        fromChannel.close();
+//        toChannel.close();
 
     }
 
@@ -169,7 +182,6 @@ public class TestChannel {
             inChannel = FileChannel.open(Paths.get("1.avi"), StandardOpenOption.READ);
             // StandardOpenOption.CREATE 代表如果没有3.jpg 将会创建,如果有 则覆盖;StandardOpenOption.CREATE_NEW代表如果已有3.jpg 会报错
             outChannel = FileChannel.open(Paths.get("3.avi"), StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.CREATE);
-
             // 2.内存映射文件
             MappedByteBuffer buf1 = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
             MappedByteBuffer buf2 = outChannel.map(FileChannel.MapMode.READ_WRITE, 0, inChannel.size());
@@ -262,15 +274,8 @@ public class TestChannel {
                     e.printStackTrace();
                 }
             }
-
-
         }
-
-
         long endTime = System.currentTimeMillis();
         System.out.println("消耗: " + (endTime - startTime) + " 毫秒");
-
-
     }
-
 }
